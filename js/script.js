@@ -1,49 +1,96 @@
+//Объявляем 7 переменных через запятую, чтобы не прописывать const к каждой
+/*объявляем переменную filterByType, которая ссылается на функцию, которая принимает параметры type и 
+элементы массива values. Сама функция сравнимает, является ли элемент массива указанным (передаем тип в type) типом данных.
+filter возвращает только элементы массива, для которых верно true */
 const filterByType = (type, ...values) => values.filter(value => typeof value === type),
 
-	hideAllResponseBlocks = () => {
-		const responseBlocksArray = Array.from(document.querySelectorAll('div.dialog__response-block'));
-		responseBlocksArray.forEach(block => block.style.display = 'none');
-	},
+    //объявляем переменную hideAllResponseBlocks, которой присваиваем стрелочную функцию. 
+    hideAllResponseBlocks = () => {
+        /*Переменной responseBlocksArray присваиваем создаваемый массив, который состоит из 3 элементов, которые отображаются
+        в окне "Результаты", 2 из которых скрыты. Элементы получаем со страницы через querySelectorAll с помощью тэга*/ 
+        const responseBlocksArray = Array.from(document.querySelectorAll('div.dialog__response-block'));
+        /*через forEach перебираем массив и скрываем все 3 возможных элемента окна "Результаты"*/
+        responseBlocksArray.forEach(block => block.style.display = 'none');
+    },
 
-	showResponseBlock = (blockSelector, msgText, spanSelector) => {
-		hideAllResponseBlocks();
-		document.querySelector(blockSelector).style.display = 'block';
-		if (spanSelector) {
-			document.querySelector(spanSelector).textContent = msgText;
-		}
-	},
-
-	showError = msgText => showResponseBlock('.dialog__response-block_error', msgText, '#error'),
-
-	showResults = msgText => showResponseBlock('.dialog__response-block_ok', msgText, '#ok'),
-
-	showNoResults = () => showResponseBlock('.dialog__response-block_no-results'),
-
-	tryFilterByType = (type, values) => {
-		try {
-			const valuesArray = eval(`filterByType('${type}', ${values})`).join(", ");
-			const alertMsg = (valuesArray.length) ?
-				`Данные с типом ${type}: ${valuesArray}` :
-				`Отсутствуют данные типа ${type}`;
-			showResults(alertMsg);
-		} catch (e) {
-			showError(`Ошибка: ${e}`);
-		}
-	};
-
+    /*объявляем переменную showResponseBlock, которой присваиваем стрелочную функцию. В функцию передается 3 параметра*/
+    showResponseBlock = (blockSelector, msgText, spanSelector) => {
+        //вызываем функцию hideAllResponseBlocks, которая скрывает все элементы окна "Результаты"
+        hideAllResponseBlocks();
+        /*получаем доступ к элементу страницы через blockSelector, который передан через параметры при вызове функции,
+         и через стили делаем его видимым на странице*/
+        document.querySelector(blockSelector).style.display = 'block';
+        //проверяем, был при вызове функции передан параметр spanSelector
+        if (spanSelector) {
+            /*если был, то получив доступ к элементу страницы через blockSelector, который передан через параметры при
+            вызове функции, добавляем на элемент, через textContent, переданный msgText*/
+            document.querySelector(spanSelector).textContent = msgText;
+        }
+    },
+    
+    /*объявляем переменную showError, которой присваиваем стрелочную функцию. В качестве параметра функция принимает msgText.
+    Возвращает она результат выполнения функции showResponseBlock. В качестве параметров showResponseBlock передаем класс 
+    нужного элемента, показывающего ошибку, в окне "Результаты", вторым параметром сообщение, которое передано при вызове showError
+    и третьим параметром id нужного span'a*/
+    showError = msgText => showResponseBlock('.dialog__response-block_error', msgText, '#error'),
+    
+    /*объявляем переменную showResults, которой присваиваем стрелочную функцию. В качестве параметра функция принимает msgText.
+    Возвращает она результат выполнения функции showResponseBlock. В качестве параметров showResponseBlock передаем класс 
+    нужного элемента, показывающего результат запроса пользователя в окне "Результаты", вторым параметром сообщение, которое передано
+    при вызове showResults и третьим параметром id нужного span'a*/
+    showResults = msgText => showResponseBlock('.dialog__response-block_ok', msgText, '#ok'),
+    
+    /*объявляем переменную showNoResults, которой присваиваем стрелочную функцию. Нет принимаемых параметром. Возвращает результат
+    выполнения функции showResponseBlock, в которую передают только class нужного div'a. Элемент отображается при запуске скрипта или
+    если пользователь не ввел в инпут никаких данных.*/
+    showNoResults = () => showResponseBlock('.dialog__response-block_no-results'),
+    
+    /*объявляем переменную tryFilterByType, которой присваиваем стрелочную функцию. Функция принимает два параметра type и values.*/
+    tryFilterByType = (type, values) => {
+        /*нет 100% уверенности в отсутствии ошибок, поэтому для контроля ситуации используется конструкция try...catch, которая
+        отлавливает ошибки и при их появлении запускает код, который прописан в catch. Если ошибок нет, блок catch не будет вызван*/
+        try {
+            /*объявляем переменную valuesArray, которой присваиваем встроенную в JS функцию, которая выполняет указанную внутри скобок строку кода,
+            а именно вызывает функцию filterByType, которая возвращает массив элементов, которые соответствуют выбранному пользователем типу данных.
+            После методом join() массив превращается в строку, элементы массива разделяются запятой и пробелом.*/
+            const valuesArray = eval(`filterByType('${type}', ${values})`).join(", ");
+            console.log(valuesArray);
+            /*объявленной переменной присваивают результат выполнения усложного оператора ?. В качестве условия выступает(valuesArray.length).
+            строка пустая, т.е. длинна равно нулю, то будет false и приваивается второе значение `Отсутствуют данные типа ${type}`.
+            Если в строке хоть какой-то символ есть, то 1+ будут true и переменное присвоится первое значение `Данные с типом ${type}: ${valuesArray}`*/
+            const alertMsg = (valuesArray.length) ?
+                `Данные с типом ${type}: ${valuesArray}` :
+                `Отсутствуют данные типа ${type}`;
+            //после этого будет вызвана функция showResults() с полученным чуть выше параметром alertMsg
+            showResults(alertMsg);
+        //в случае выявления ошибки, кроме синтаксической, будет выполнен этот блок.
+        } catch (e) {
+            //будет вызвана функция showError(), которой будет передан единственный параметр `Ошибка: ${e}`, где e - ошибка, которая возникла
+            showError(`Ошибка: ${e}`);
+        }
+    };
+//получаем доступ к кнопке "Фильтровать"
 const filterButton = document.querySelector('#filter-btn');
 
+//вешаем слушателя на кнопку "Фильтровать" на клик пользователя
 filterButton.addEventListener('click', e => {
-	const typeInput = document.querySelector('#type');
-	const dataInput = document.querySelector('#data');
+    //получаем доступ к селектору с выбором типа данных
+    const typeInput = document.querySelector('#type');
+    //получаем доступ к инпуту с введенными пользователем данными
+    const dataInput = document.querySelector('#data');
 
-	if (dataInput.value === '') {
-		dataInput.setCustomValidity('Поле не должно быть пустым!');
-		showNoResults();
-	} else {
-		dataInput.setCustomValidity('');
-		e.preventDefault();
-		tryFilterByType(typeInput.value.trim(), dataInput.value.trim());
-	}
+    //проверяем, а не пустой ли инпут?
+    if (dataInput.value === '') {
+        //пользователь ничего не ввел, поэтому в окошке ввода указываем ему, что поле не должно быть пустое
+        dataInput.setCustomValidity('Поле не должно быть пустым!');
+        //вызываем функцию showNoResults()
+        showNoResults();
+    } else {
+        dataInput.setCustomValidity('');
+        //при нажатии пользователем кнопки "Фильтровать" страница не должна перегружаться
+        e.preventDefault();
+        /*Вызывается функция tryFilterByType(), в которую передаются два параметра. Первый - выбранный пользователем тип данных. У строки по краям
+        обрезаются пробелы методом trim(). Второй - строка, с введенными пользователем в инпут значениями. Так же обрезаются пробелы*/
+        tryFilterByType(typeInput.value.trim(), dataInput.value.trim());
+    }
 });
-
