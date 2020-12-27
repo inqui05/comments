@@ -23,7 +23,7 @@ const filterByType = (type, ...values) => values.filter(value => typeof value ==
         //проверяем, был при вызове функции передан параметр spanSelector
         if (spanSelector) {
             /*если был, то получив доступ к элементу страницы через blockSelector, который передан через параметры при
-            вызове функции, добавляем на элемент, через textContent, переданный msgText*/
+            вызове функции, добавляем на элемент, через textContent, переданный в параметрах msgText*/
             document.querySelector(spanSelector).textContent = msgText;
         }
     },
