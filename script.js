@@ -1,42 +1,75 @@
 document.addEventListener('DOMContentLoaded', () => {
     'use strict';
 
-    const select = document.getElementById('cars'),
-        output = document.getElementById('output');
+    const currencyIn = document.querySelector('.currency-type-in'),
+          currencyOut = document.querySelector('.currency-type-out'),
+          input = document.querySelector('.input'),
+          totalOut = document.getElementById('total-out'),
+          currencyInName = document.getElementById('currency-in-name'),
+          currencyOutName = document.getElementById('currency-out-name'),
+          btn = document.querySelector('.btn');
 
-    const postData = () => {
-        const promise = new Promise ((resolve, reject) => {
-            const request = new XMLHttpRequest();
-            request.addEventListener('readystatechange', () => {
-                if (request.readyState === 4 && request.status === 200) {
-                    const data = JSON.parse(request.responseText);
-                    resolve(data);
-                } else {
-                    reject();
-                }
-            });
-
-        request.open('GET', './cars.json');
-        request.setRequestHeader('Content-type', 'application/json');
-        request.send();
-        });
+    const currencies = {
+        RUB: 'российкий рубль (RUB)',
+        USD: 'доллар США (USD)',
+        EUR: 'евро (EUR)'
     };
 
-    select.addEventListener('change',
-        postData()
-            .then((data) => {
-                data.cars.forEach(item => {
-                    if (item.brand === select.value) {
-                        const {brand, model, price} = item;
-                        output.innerHTML = `Тачка ${brand} ${model} <br>
-                        Цена: ${price}$`;
+    //переводим из одной валюты в другую и прописываем в span
+    const calculate = (value, rate) => {
+        totalOut.value = (+value * +rate).toFixed(2);
+    };
+
+    const getData = (url) => {
+        fetch(url)
+            .then((response) => {
+                if (!response.ok){
+                    throw new Error('Network status is not 200');
+                }
+                return response.json();
+            })
+            .then ((response) => {
+                console.log(response);
+                for (let key in response.rates){
+                    if (key === currencyOut.value){
+                        calculate(input.value, response.rates[key]);
                     }
-                });
-            }, () => {
-                output.innerHTML = 'Произошла ошибка';
+                }
             })
-            .catch(() => {
-                output.innerHTML = 'Произошла ошибка';
-            })
-    );
+            .catch((error) => {
+                console.error(error);
+            });
+    };
+
+    document.getElementById('currency').addEventListener('change', (event) => {
+        let target = event.target;
+        if (target === currencyIn) {
+            for (let key in currencies){
+                if (key === target.value) {
+                    currencyInName.textContent = currencies[key];
+                }
+            }
+        } else if (target === currencyOut) {
+            for (let key in currencies){
+                   if (key === target.value) {
+                   currencyOutName.textContent = currencies[key];
+                }
+            }
+        }
+    });
+
+    input.addEventListener('input', event => {
+        event.target.value = event.target.value.replace(/\D/g, '');
+    });
+
+    btn.addEventListener('click', () => {
+        if (currencyIn.value === '' || currencyOut.value === '') {
+            alert(`Для конвертации необходимо выбрать валюты!`);
+        } else if (input.value === '') {
+            alert(`Введите сумму, которую надо конвертировать!`);
+        } else {
+            let url = 'https://api.exchangeratesapi.io/latest?base=' + currencyIn.value;
+            getData(url);
+        }
+    });
 });

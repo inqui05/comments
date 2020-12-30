@@ -7,24 +7,54 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
     <style>
-
+        #total-out
+        {
+            width:170px;
+            background-color: rgb(205, 211, 205);
+            border-bottom:1px;
+        }
+        #total-in
+        {
+            width:170px;
+            border-bottom:1px;
+        }
     </style>
 </head>
 
 <body>
-
-<select id="cars">
-    <option value="no">Выберите тачку</option>
-    <option value="bmw">bmw</option>
-    <option value="volvo">volvo</option>
-</select>
-
-<div id="output">
-    выбери тачку
-</div>
-
+    <div id="currency" class="exchange ">
+        <h2>Конвертер валют</h2>
+            <div class="currency-in">
+                <div class="in">
+                    <select class="currency-type-in" required>
+                        <option class="currency-title-in" value="">Выберите валюту</option>
+                        <option value="USD">Доллар США</option>
+                        <option value="EUR">Евро</option>
+                        <option value="RUB">Российский рубль</option>
+                    </select>
+                    <input type="text" min="1" step="1" class="input" placeholder="Введите сумму">
+                    <span id="currency-in-name">рос. рублей</span>
+                </div>
+            </div>
+             <div class="currency-out">
+                <div class="out">
+                    <select class="currency-type-out" required>
+                        <option class="currency-title-out" value="">Выберите валюту</option>
+                        <option value="USD">Доллар США</option>
+                        <option value="EUR">Евро</option>
+                        <option value="RUB">Российский рубль</option>
+                    </select>
+                    <input id="total-out" readonly>
+                    <span id="currency-out-name">рос. рублей</span> 
+                </div>
+            </div>
+            <div>
+                <button class="btn">Конвертировать!</button>
+            </div>
+            </div>
+        </div>
+    </div>
 
 <script src="script.js"></script>
 </body>
-
 </html>
